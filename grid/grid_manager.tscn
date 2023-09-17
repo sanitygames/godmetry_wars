@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://c3xp6yc7sir7"]
+
+[ext_resource type="Script" path="res://grid/grid_manager.gd" id="1_qikib"]
+
+[node name="GridManager" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_qikib")

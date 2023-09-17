@@ -1,0 +1,34 @@
+[gd_scene load_steps=5 format=3 uid="uid://c6j6vcls71o71"]
+
+[ext_resource type="Script" path="res://main/main.gd" id="1_lpy16"]
+[ext_resource type="PackedScene" uid="uid://c3xp6yc7sir7" path="res://grid/grid_manager.tscn" id="2_7ifgb"]
+[ext_resource type="PackedScene" uid="uid://c2tlugna3l5ff" path="res://player/player.tscn" id="3_2noo3"]
+
+[sub_resource type="Environment" id="Environment_0yyfw"]
+background_mode = 3
+background_canvas_max_layer = 1
+glow_enabled = true
+glow_normalized = true
+glow_intensity = 6.43
+glow_strength = 1.21
+glow_bloom = 0.17
+glow_blend_mode = 1
+
+[node name="Main" type="CanvasLayer"]
+script = ExtResource("1_lpy16")
+
+[node name="GridManager" parent="." instance=ExtResource("2_7ifgb")]
+custom_minimum_size = Vector2(1024, 768)
+offset_left = -14.0
+offset_top = -12.0
+offset_right = 1010.0
+offset_bottom = 756.0
+
+[node name="Player" parent="." instance=ExtResource("3_2noo3")]
+position = Vector2(542, 333)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_0yyfw")
+
+[connection signal="on_pressed" from="Player" to="." method="_on_player_on_pressed"]
+[connection signal="position_changed" from="Player" to="." method="_on_player_position_changed"]
