@@ -1,7 +1,8 @@
 extends Control
 
-var grid: Grid
+@export_range(0.1, 4.0) var resolution = 1.0
 
+var grid: Grid
 var is_rainbow = false
 
 # 右クリックを受けたらレインボー、ノーマルの切り替え。
@@ -12,24 +13,35 @@ func _input(event):
 
 # gridデータオブジェクトの生成。
 func _ready():
-	grid = Grid.new(get_rect(), Vector2(30.0, 30.0))
+	var rect = get_rect()
+	var spacing = Vector2(60, 60) / resolution
+	rect.position.x = fmod(rect.size.x, spacing.x) * 0.5
+	rect.position.y = fmod(rect.size.y, spacing.y) * 0.5
+	grid = Grid.new(rect, spacing)
+	get_parent().get_node("DebugWindow").point_size = grid.point_size  
 
-# gridの描画
+
 func _draw():
-	var f_draw_line = func(points: Array[PackedVector2Array], color: Array[PackedColorArray], width: float):
-		for i in points.size():
-			for j in points[i].size() - 1:
-				var _color = color[i][j] if is_rainbow else Color.from_string("4df098", Color.WHEAT)
-				draw_line(
-					points[i][j],
-					points[i][j + 1],
-					_color,
-					width
-				)
-	f_draw_line.call(grid.points_h, grid.points_h_color, 1.0)
-	f_draw_line.call(grid.points_v, grid.points_v_color, 1.0)
-	f_draw_line.call(grid.sub_points_h, grid.points_h_color, 1.0)
-	f_draw_line.call(grid.sub_points_v, grid.points_v_color, 1.0)
+	if is_rainbow:
+		for i in grid.points_h.size():
+			draw_multiline_colors(grid.points_h[i], grid.points_h_color[i])
+		for i in grid.points_v.size():
+			draw_multiline_colors(grid.points_v[i], grid.points_v_color[i])
+		for i in grid.sub_points_h.size():
+			draw_multiline_colors(grid.sub_points_h[i], grid.points_h_color[i])
+		for i in grid.sub_points_v.size():
+			draw_multiline_colors(grid.sub_points_v[i], grid.points_v_color[i])
+	else:
+		var color = Color(0, 1.0, 0.5)
+		for i in grid.points_h.size():
+			draw_multiline(grid.points_h[i], color)
+		for i in grid.points_v.size():
+			draw_multiline(grid.points_v[i], color)
+		for i in grid.sub_points_h.size():
+			draw_multiline(grid.sub_points_h[i], color)
+		for i in grid.sub_points_v.size():
+			draw_multiline(grid.sub_points_v[i], color)
+
 	
 # gridのアップデートと再描画
 func _process(_delta):

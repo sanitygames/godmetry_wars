@@ -1,17 +1,17 @@
-[gd_scene load_steps=5 format=3 uid="uid://c6j6vcls71o71"]
+[gd_scene load_steps=6 format=3 uid="uid://c6j6vcls71o71"]
 
 [ext_resource type="Script" path="res://main/main.gd" id="1_lpy16"]
 [ext_resource type="PackedScene" uid="uid://c3xp6yc7sir7" path="res://grid/grid_manager.tscn" id="2_7ifgb"]
 [ext_resource type="PackedScene" uid="uid://c2tlugna3l5ff" path="res://player/player.tscn" id="3_2noo3"]
+[ext_resource type="Script" path="res://debug/debug_window.gd" id="4_b7k7u"]
 
-[sub_resource type="Environment" id="Environment_0yyfw"]
+[sub_resource type="Environment" id="Environment_d0e0c"]
 background_mode = 3
 background_canvas_max_layer = 1
+sdfgi_enabled = true
 glow_enabled = true
-glow_normalized = true
-glow_intensity = 6.43
-glow_strength = 1.21
-glow_bloom = 0.17
+glow_strength = 1.26
+glow_bloom = 0.35
 glow_blend_mode = 1
 
 [node name="Main" type="CanvasLayer"]
@@ -19,16 +19,37 @@ script = ExtResource("1_lpy16")
 
 [node name="GridManager" parent="." instance=ExtResource("2_7ifgb")]
 custom_minimum_size = Vector2(1024, 768)
-offset_left = -14.0
-offset_top = -12.0
-offset_right = 1010.0
-offset_bottom = 756.0
+offset_top = 1.0
+offset_right = 1024.0
+offset_bottom = 769.0
+resolution = 2.001
 
 [node name="Player" parent="." instance=ExtResource("3_2noo3")]
 position = Vector2(542, 333)
 
+[node name="DebugWindow" type="Panel" parent="."]
+offset_left = 757.0
+offset_top = 647.0
+offset_right = 1005.0
+offset_bottom = 748.0
+script = ExtResource("4_b7k7u")
+
+[node name="Fps" type="Label" parent="DebugWindow"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 204.0
+offset_bottom = 35.0
+
+[node name="Points" type="Label" parent="DebugWindow"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 50.0
+offset_right = 204.0
+offset_bottom = 73.0
+
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_0yyfw")
+environment = SubResource("Environment_d0e0c")
 
 [connection signal="on_pressed" from="Player" to="." method="_on_player_on_pressed"]
 [connection signal="position_changed" from="Player" to="." method="_on_player_position_changed"]

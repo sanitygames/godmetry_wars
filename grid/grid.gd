@@ -69,12 +69,10 @@ class PhysicsGrid:
 		cols = int(rect.size.x / spacing.x) + 1
 		rows = int(rect.size.y / spacing.y) + 1
 		screen_size = rect.size
-		var y = rect.position.y 
+		var y = rect.position.y
 		while y <= rect.end.y:
-			y += spacing.y
 			var x = rect.position.x
 			while x <= rect.end.x:
-				x += spacing.x
 				var pos_v = Vector3(x, y, 0.0)
 
 				var point_mass = PointMass.new()
@@ -84,7 +82,9 @@ class PhysicsGrid:
 				var fixed_point_mass = PointMass.new()
 				fixed_point_mass.set_point_mass(pos_v, 0.0)
 				fixed_points.push_back(fixed_point_mass)
+				x += spacing.x
 				
+			y += spacing.y
 
 		# 点が端や特定の位置の場合、バネの一方は固定されたりするので。
 		for _y in rows:
@@ -164,6 +164,7 @@ class PhysicsGrid:
 # ここからメイン。PhysicsGridの計算結果をArray[PackedVector2Array]に収める。
 ################################################################################
 var physics_grid: PhysicsGrid 
+var point_size: int
 var points_h: Array[PackedVector2Array] # ちゃんと計算して描く横線
 var points_v: Array[PackedVector2Array] # ちゃんと計算して描く縦線
 var points_h_color: Array[PackedColorArray] # 横線の色情報（レインボー用)
@@ -192,14 +193,17 @@ func _init(p_rect: Rect2, p_spacing: Vector2, _p_resolution: int = 1):
 		return _a
 
 	for __ in rows:
-		points_h.push_back(f_get_packed_vector2_array.call(cols))
+		points_h.push_back(f_get_packed_vector2_array.call(cols * 2))
 		points_h_color.push_back(f_get_packed_color_array.call(cols))
-		sub_points_h.push_back(f_get_packed_vector2_array.call(cols))
+		sub_points_h.push_back(f_get_packed_vector2_array.call(cols * 2))
 
 	for __ in cols:
-		points_v.push_back(f_get_packed_vector2_array.call(rows))
+		points_v.push_back(f_get_packed_vector2_array.call(rows * 2))
 		points_v_color.push_back(f_get_packed_color_array.call(rows))
-		sub_points_v.push_back(f_get_packed_vector2_array.call(rows))
+		sub_points_v.push_back(f_get_packed_vector2_array.call(rows * 2))
+
+	prints(cols, rows)
+	point_size = (cols * 2 - 1) * (rows * 2 - 1)
 
 
 # 物理計算をして、結果をArray[PackedXXXArray]に。収める。
@@ -207,13 +211,15 @@ func _init(p_rect: Rect2, p_spacing: Vector2, _p_resolution: int = 1):
 func update() -> void:
 	physics_grid.update()
 	for y in physics_grid.rows:
-		for x in physics_grid.cols:
-			points_h[y][x] = physics_grid.get_point(x, y)
+		for x in physics_grid.cols - 1:
+			points_h[y][2 * x] = physics_grid.get_point(x, y)
+			points_h[y][2 * x + 1] = physics_grid.get_point(x + 1, y)
 			points_h_color[y][x].h = physics_grid.get_point_z(x, y) * 0.003
 
 	for x in physics_grid.cols:
-		for y in physics_grid.rows:
-			points_v[x][y] = physics_grid.get_point(x, y)
+		for y in physics_grid.rows - 1:
+			points_v[x][2 * y] = physics_grid.get_point(x, y)
+			points_v[x][2 * y + 1] = physics_grid.get_point(x, y + 1)
 			points_v_color[x][y].h = physics_grid.get_point_z(x, y) * 0.003
 
 
